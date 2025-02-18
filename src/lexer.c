@@ -387,6 +387,32 @@ void tryParseExportStatement () {
   if (pos == curPos && !isPunctuator(ch))
     return;
 
+  // 新增: 处理 TypeScript 类型相关导出
+  if (ch == 't') {
+    // export type ...
+    if (memcmp(pos + 1, &TY[0], 2 * 2) == 0 && isWsNotBr(*(pos + 3))) {
+      pos += 3;
+      ch = commentWhitespace(true);
+      const char16_t* startPos = pos;
+      ch = readToWsOrPunctuator(ch);
+      addExport(startPos, pos, startPos, pos);
+      pos--;
+      return;
+    }
+  }
+  else if (ch == 'i') {
+    // export interface ...
+    if (memcmp(pos + 1, "nterface", 8 * 2) == 0 && isWsNotBr(*(pos + 9))) {
+      pos += 9;
+      ch = commentWhitespace(true);
+      const char16_t* startPos = pos;
+      ch = readToWsOrPunctuator(ch);
+      addExport(startPos, pos, startPos, pos);
+      pos--;
+      return;
+    }
+  }
+
   if (ch == '{') {
     pos++;
     ch = commentWhitespace(true);
