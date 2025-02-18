@@ -387,7 +387,7 @@ void tryParseExportStatement () {
   if (pos == curPos && !isPunctuator(ch))
     return;
 
-  // 新增: 处理 TypeScript 类型相关导出
+  // 新增: 处理 TypeScript 类型相关导出(目前仅支持 export type ... 和 export interface ...)
   if (ch == 't') {
     // export type ...
     if (memcmp(pos + 1, &TY[0], 2 * 2) == 0 && isWsNotBr(*(pos + 3))) {
