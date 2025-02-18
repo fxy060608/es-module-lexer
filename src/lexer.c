@@ -29,6 +29,7 @@ static const char16_t CONTIN[] = { 'c', 'o', 'n', 't', 'i', 'n' };
 static const char16_t SYNC[] = {'s', 'y', 'n', 'c'};
 static const char16_t UNCTION[] = {'u', 'n', 'c', 't', 'i', 'o', 'n'};
 static const char16_t OURCE[] = {'o', 'u', 'r', 'c', 'e'};
+static const char16_t NTERFACE[] = {'n', 't', 'e', 'r', 'f', 'a', 'c', 'e'};
 
 // Note: parsing is based on the _assumption_ that the source is already valid
 bool parse () {
@@ -387,32 +388,6 @@ void tryParseExportStatement () {
   if (pos == curPos && !isPunctuator(ch))
     return;
 
-  // 新增: 处理 TypeScript 类型相关导出(目前仅支持 export type ... 和 export interface ...)
-  if (ch == 't') {
-    // export type ...
-    if (memcmp(pos + 1, &TY[0], 2 * 2) == 0 && isWsNotBr(*(pos + 3))) {
-      pos += 3;
-      ch = commentWhitespace(true);
-      const char16_t* startPos = pos;
-      ch = readToWsOrPunctuator(ch);
-      addExport(startPos, pos, startPos, pos);
-      pos--;
-      return;
-    }
-  }
-  else if (ch == 'i') {
-    // export interface ...
-    if (memcmp(pos + 1, "nterface", 8 * 2) == 0 && isWsNotBr(*(pos + 9))) {
-      pos += 9;
-      ch = commentWhitespace(true);
-      const char16_t* startPos = pos;
-      ch = readToWsOrPunctuator(ch);
-      addExport(startPos, pos, startPos, pos);
-      pos--;
-      return;
-    }
-  }
-
   if (ch == '{') {
     pos++;
     ch = commentWhitespace(true);
@@ -605,6 +580,26 @@ void tryParseExportStatement () {
         return;
 
       default:
+        // 处理 TypeScript type 导出
+        if (ch == 't' && memcmp(pos + 1, &TY[1], 1 * 2) == 0 && *(pos + 2) == 'p' && *(pos + 3) == 'e' && isWsNotBr(*(pos + 4))) {
+          pos += 4;
+          ch = commentWhitespace(true);
+          const char16_t* startPos = pos;
+          ch = readToWsOrPunctuator(ch);
+          addExport(startPos, pos, startPos, pos);
+          pos--;
+          return;
+        }
+        // 处理 TypeScript interface 导出
+        if (ch == 'i' && memcmp(pos + 1, &NTERFACE[0], 8 * 2) == 0 && isWsNotBr(*(pos + 9))) {
+          pos += 9;
+          ch = commentWhitespace(true);
+          const char16_t* startPos = pos;
+          ch = readToWsOrPunctuator(ch);
+          addExport(startPos, pos, startPos, pos);
+          pos--;
+          return;
+        }
         return;
     }
   }

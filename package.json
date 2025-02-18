@@ -18,8 +18,8 @@
     }
   },
   "scripts": {
-    "build": "npm install -g chomp ; chomp build",
-    "test": "npm install -g chomp ; chomp test"
+    "build": "chomp build",
+    "test": "chomp test"
   },
   "author": "Guy Bedford",
   "license": "MIT",

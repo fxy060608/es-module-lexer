@@ -1558,3 +1558,22 @@ export { d as a, p as b, z as c, r as d, q }`;
     }
   });
 });
+
+suite('TypeScript', () => {
+  test('Export type', () => {
+    const source = `export type A = {};`;
+    const [imports, exports] = parse(source);
+    assert.strictEqual(imports.length, 0);
+    assert.strictEqual(exports.length, 1);
+    assertExportIs(source, exports[0], { s: 12, e: 13, ls: 12, le: 13, n: 'A', ln: 'A' });
+  });
+  test('Export interface', () => {
+    const source = `export interface A {
+      a: string;
+    }`;
+    const [imports, exports] = parse(source);
+    assert.strictEqual(imports.length, 0);
+    assert.strictEqual(exports.length, 1);
+    assertExportIs(source, exports[0], { s: 17, e: 18, ls: 17, le: 18, n: 'A', ln: 'A' });
+  });
+})
